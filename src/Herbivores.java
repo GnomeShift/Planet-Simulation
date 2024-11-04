@@ -69,6 +69,11 @@ class Duck extends Herbivores {
     public Duck(int location) {
         super(location, "Утка", "\uD83E\uDD86");
     }
+
+    @Override
+    public boolean canHunt(Animal other) {
+        return other instanceof Caterpillar;
+    }
 }
 
 class Caterpillar extends Herbivores {
