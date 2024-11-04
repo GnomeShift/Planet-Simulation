@@ -76,7 +76,7 @@ class Cell {
         for (Animal animal : animals) {
             if (animal.isAlive()) {
                 int newLocation = animal.move(this);
-                if (newLocation != animal.getLocation()) {
+                if (newLocation == animal.getLocation()) {
                     movedAnimals.add(animal);
                 }
             }
