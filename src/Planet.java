@@ -11,18 +11,16 @@ public class Planet {
         }
     }
 
-    public void addPlant(Plant plant) {
-        cells.get(plant.getLocation()).addPlant(plant);
-    }
-
-    public void addAnimal(Animal animal) {
-        cells.get(animal.getLocation()).addAnimal(animal);
-    }
-
-    public void terraform(Animal[] animals, Plant[] plants) {
+    public void terraform(Animal[] animals, Plant[] plants, int days) {
         for (Cell cell : cells) {
             cell.addAnimal(animals[random.nextInt(animals.length)]);
             cell.addPlant(plants[random.nextInt(plants.length)]);
+        }
+
+        for (int i = 0; i < days; i++) {
+            System.out.println("День " + (i + 1) + ":");
+            simulateDay();
+            System.out.println();
         }
     }
 
@@ -116,21 +114,15 @@ class Cell {
     public String toString() {
         StringBuilder sb = new StringBuilder("Клетка " + location + ": ");
         if (!plants.isEmpty()) {
-            sb.append("Растения: ");
             for (Plant plant : plants) {
-                sb.append(plant.getName() + plant.getIcon() + (plant.isAlive() ? "" : "(\uD83D\uDC80)" + " "));
+                sb.append(plant.getName() + plant.getIcon() + (plant.isAlive() ? "" : "(\uD83D\uDC80)") + " ");
             }
         }
         if (!animals.isEmpty()) {
-            sb.append("Животные: ");
             for (Animal animal : animals) {
                 sb.append(animal.getName() + animal.getIcon() + (animal.isAlive() ? "" : "(\uD83D\uDC80)") + " ");
             }
         }
         return sb.toString();
-    }
-
-    public int getLocation() {
-        return location;
     }
 }
