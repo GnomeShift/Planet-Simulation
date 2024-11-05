@@ -37,33 +37,3 @@ class Turf extends Plant {
         super(location, "Земля", "\uD83C\uDF31");
     }
 }
-
-class Evergreen extends Plant {
-    public Evergreen(int location) {
-        super(location, "Елка", "\uD83C\uDF32");
-    }
-}
-
-class Tree extends Plant {
-    public Tree(int location) {
-        super(location, "Дуб", "\uD83C\uDF33");
-    }
-}
-
-class Rice extends Plant {
-    public Rice(int location) {
-        super(location, "Рис", "\uD83C\uDF3E");
-    }
-}
-
-class Grass extends Plant {
-    public Grass(int location) {
-        super(location, "Трава", "\uD83C\uDF3F");
-    }
-}
-
-class Clover extends Plant {
-    public Clover(int location) {
-        super(location, "Клевер", "\uD83C\uDF40");
-    }
-}

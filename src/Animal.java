@@ -44,7 +44,7 @@ public abstract class Animal {
         List<String> events = new ArrayList<>();
         if (isAlive && other.isAlive()) {
             if (canHunt(other)) {
-                events.add(getName() + " съел " + other.getName());
+                events.add(getName() + " съел(-а) " + other.getName());
                 other.die();
             }
         }
@@ -57,7 +57,7 @@ public abstract class Animal {
         List<String> events = new ArrayList<>();
         if (isAlive) {
             if (canEat(plant)) {
-                events.add(getName() + " съел " + plant.getName());
+                events.add(getName() + " съел(-а) " + plant.getName());
                 plant.die();
             }
         }

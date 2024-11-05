@@ -9,7 +9,7 @@ class Herbivores extends Animal {
     }
 
     public boolean canEat(Plant plant) {
-        return true;
+        return plant instanceof Herbs;
     }
 
     public String toString() {
