@@ -32,13 +32,18 @@ public class Planet {
         }
 
         for (Cell cell : cells) {
+            cell.multiplyAnimals();
+        }
+
+        for (Cell cell : cells) {
             dayEvents.addAll(cell.interact());
         }
 
         System.out.println("События дня:");
         if (dayEvents.isEmpty()) {
             System.out.println("Ничего интересного...");
-        } else {
+        }
+        else {
             for (String event : dayEvents) {
                 System.out.println(event);
             }
@@ -51,8 +56,8 @@ public class Planet {
 }
 
 class Cell {
-    private int location;
-    private List<Animal> animals = new ArrayList<>();
+    public int location;
+    public List<Animal> animals = new ArrayList<>();
     private List<Plant> plants = new ArrayList<>();
     public Planet planet;
 
@@ -67,6 +72,15 @@ class Cell {
 
     public void addAnimal(Animal animal) {
         animals.add(animal);
+    }
+
+    public Animal getAnimals(Animal animal) {
+        for (Animal finder : animals) {
+            if (animal.equals(finder)) {
+                return animal;
+            }
+        }
+        return null;
     }
 
     public void moveAnimals() {
@@ -84,6 +98,25 @@ class Cell {
             animals.remove(animal);
             planet.cells.get(animal.getLocation()).addAnimal(animal);
         }
+    }
+
+    public List<Animal> multiplyAnimals() {
+    Iterator<Animal> it = animals.iterator();
+    boolean hasMultiplied = false;
+    List<Animal> multipliedAnimals = new ArrayList<>();
+        while (it.hasNext()) {
+            Animal animal = it.next();
+            if (animal.canMultiply() && animal.isAlive() && !hasMultiplied) {
+                Animal newAnimal = animal.multiply(this);
+                if (newAnimal != null) {
+                    planet.cells.get(newAnimal.getLocation()).addAnimal(newAnimal);
+                    hasMultiplied = true;
+                    multipliedAnimals.add(newAnimal);
+                    return multipliedAnimals;
+                }
+            }
+        }
+        return multipliedAnimals;
     }
 
     public List<String> interact() {

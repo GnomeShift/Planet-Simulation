@@ -12,6 +12,10 @@ public class Predators extends Animal {
         return false;
     }
 
+    public boolean canMultiply() {
+        return true;
+    }
+
     public String toString() {
         return "Клетка: " + getLocation() + ", " + getName() + getIcon();
     }

@@ -40,6 +40,26 @@ public abstract class Animal {
         return location;
     }
 
+    public Animal multiply(Cell cell) {
+        if (cell.getAnimals(this).isAlive()) {
+            for (Animal other : cell.animals) {
+                if (other != this && other.isAlive() && other.getClass().equals(this.getClass())) {
+                    Animal newAnimal = null;
+                    try {
+                        newAnimal = this.getClass().getConstructor(int.class).newInstance(cell.location);
+                    }
+                    catch (Exception e) {
+                        System.out.println("Ошибочка! " + e.getMessage());
+                    }
+                    return newAnimal;
+                }
+            }
+        }
+        return null;
+    }
+
+    public abstract boolean canMultiply();
+
     public List<String> interact(Animal other) {
         List<String> events = new ArrayList<>();
         if (isAlive && other.isAlive()) {

@@ -12,6 +12,10 @@ class Herbivores extends Animal {
         return plant instanceof Herbs;
     }
 
+    public boolean canMultiply() {
+        return true;
+    }
+
     public String toString() {
         return "Клетка: " + getLocation() + ", " + getName() + getIcon();
     }
