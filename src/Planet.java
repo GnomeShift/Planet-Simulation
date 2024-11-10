@@ -18,7 +18,7 @@ public class Planet {
         }
 
         for (int i = 0; i < days; i++) {
-            System.out.println("День " + (i + 1) + ":");
+            System.out.println("ДЕНЬ " + (i + 1) + ":");
             simulateDay();
             System.out.println();
         }
@@ -148,12 +148,12 @@ class Cell {
         StringBuilder sb = new StringBuilder("Клетка " + location + ": ");
         if (!plants.isEmpty()) {
             for (Plant plant : plants) {
-                sb.append(plant.getName() + plant.getIcon() + (plant.isAlive() ? "" : "(\uD83D\uDC80)") + " ");
+                sb.append(plant.getName()).append(plant.getIcon()).append(plant.isAlive() ? "" : "(\uD83D\uDC80)").append(" ");
             }
         }
         if (!animals.isEmpty()) {
             for (Animal animal : animals) {
-                sb.append(animal.getName() + animal.getIcon() + (animal.isAlive() ? "" : "(\uD83D\uDC80)") + " ");
+                sb.append(animal.getName()).append(animal.getIcon()).append(animal.isAlive() ? "" : "(\uD83D\uDC80)").append(" ");
             }
         }
         return sb.toString();
