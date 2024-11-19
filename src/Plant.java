@@ -1,14 +1,15 @@
 public abstract class Plant {
     private int location;
-    private boolean isAlive;
+    private boolean isAlive = true;
     private String name;
     private String icon;
+    private int energy;
 
-    public Plant(int location, String name, String icon) {
+    public Plant(int location, String name, String icon, int energy) {
         this.location = location;
-        this.isAlive = true;
         this.name = name;
         this.icon = icon;
+        this.energy = energy;
     }
 
     public int getLocation() {
@@ -30,10 +31,14 @@ public abstract class Plant {
     public void die() {
         isAlive = false;
     }
+
+    public int getEnergy() {
+        return energy;
+    }
 }
 
 class Turf extends Plant {
     public Turf(int location) {
-        super(location, "Земля", "\uD83C\uDF31");
+        super(location, "Земля", "\uD83C\uDF31", 0);
     }
 }

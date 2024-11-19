@@ -32,14 +32,14 @@ public class Planet {
         }
 
         for (Cell cell : cells) {
-            cell.multiplyAnimals();
+            dayEvents.addAll(cell.multiplyAnimals());
         }
 
         for (Cell cell : cells) {
             dayEvents.addAll(cell.interact());
         }
 
-        System.out.println("События дня:");
+        System.out.println("СОБЫТИЯ ДНЯ:");
         if (dayEvents.isEmpty()) {
             System.out.println("Ничего интересного...");
         }
@@ -100,23 +100,22 @@ class Cell {
         }
     }
 
-    public List<Animal> multiplyAnimals() {
-    Iterator<Animal> it = animals.iterator();
-    boolean hasMultiplied = false;
-    List<Animal> multipliedAnimals = new ArrayList<>();
-        while (it.hasNext()) {
-            Animal animal = it.next();
-            if (animal.canMultiply() && animal.isAlive() && !hasMultiplied) {
-                Animal newAnimal = animal.multiply(this);
+    public List<String> multiplyAnimals() {
+        List<Animal> newAnimals = new ArrayList<>();
+        List<String> events = new ArrayList<>();
+        for (Animal animal : animals) {
+            if (animal.isAlive() && animal.canMultiply()) {
+                Animal newAnimal = animal.multiply();
                 if (newAnimal != null) {
-                    planet.cells.get(newAnimal.getLocation()).addAnimal(newAnimal);
-                    hasMultiplied = true;
-                    multipliedAnimals.add(newAnimal);
-                    return multipliedAnimals;
+                    newAnimals.add(newAnimal);
+                    events.add(animal.getName() + " размножился(-лась) в клетке " + location);
                 }
             }
         }
-        return multipliedAnimals;
+        for (Animal animal : newAnimals) {
+            planet.cells.get(animal.getLocation()).addAnimal(animal);
+        }
+        return events;
     }
 
     public List<String> interact() {
