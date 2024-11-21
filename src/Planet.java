@@ -1,11 +1,18 @@
 import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Planet {
     public List<Cell> cells;
     private Random random = new Random();
+    private final ExecutorService executor;
+    private final AtomicInteger dayCounter;
 
     public Planet(int size) {
         cells = new ArrayList<>();
+        this.dayCounter = new AtomicInteger(0);
+        this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
         for (int i = 0; i < size; i++) {
             cells.add(new Cell(i, this));
         }
@@ -17,41 +24,65 @@ public class Planet {
             cell.addPlant(plants[random.nextInt(plants.length)]);
         }
 
-        for (int i = 0; i < days; i++) {
-            System.out.println("ДЕНЬ " + (i + 1) + ":");
-            simulateDay();
-            System.out.println();
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        Runnable dailyTask = () -> {
+            int currentDay = dayCounter.incrementAndGet();
+            System.out.println("\nДЕНЬ " + currentDay + ":");
+            try {
+                simulateDay();
+            }
+            catch (RejectedExecutionException e) {
+                System.err.println("Ошибка: Пул потоков перегружен!");
+            }
+        };
+
+        scheduler.scheduleAtFixedRate(dailyTask, 0, 1, TimeUnit.SECONDS);
+
+        try {
+            Thread.sleep(days * 1000L);
+            scheduler.shutdown();
+            if (!scheduler.awaitTermination(5, TimeUnit.SECONDS)) {
+                scheduler.shutdownNow();
+            }
+            executor.shutdown();
+            if (!executor.awaitTermination(5, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
     public void simulateDay() {
-        List<String> dayEvents = new ArrayList<>();
+        executor.submit(() -> {
+            List<String> dayEvents = new ArrayList<>();
 
-        for (Cell cell : cells) {
-            cell.moveAnimals();
-        }
-
-        for (Cell cell : cells) {
-            dayEvents.addAll(cell.multiplyAnimals());
-        }
-
-        for (Cell cell : cells) {
-            dayEvents.addAll(cell.interact());
-        }
-
-        System.out.println("СОБЫТИЯ ДНЯ:");
-        if (dayEvents.isEmpty()) {
-            System.out.println("Ничего интересного...");
-        }
-        else {
-            for (String event : dayEvents) {
-                System.out.println(event);
+            for (Cell cell : cells) {
+                cell.moveAnimals();
             }
-        }
 
-        for (Cell cell : cells) {
-            System.out.println(cell);
-        }
+            for (Cell cell : cells) {
+                dayEvents.addAll(cell.multiplyAnimals());
+            }
+
+            for (Cell cell : cells) {
+                dayEvents.addAll(cell.interact());
+            }
+
+            System.out.println("СОБЫТИЯ ДНЯ:");
+            if (dayEvents.isEmpty()) {
+                System.out.println("Ничего интересного...");
+            }
+            else {
+                for (String event : dayEvents) {
+                    System.out.println(event);
+                }
+            }
+
+            for (Cell cell : cells) {
+                System.out.println(cell);
+            }
+        });
     }
 }
 
@@ -74,16 +105,7 @@ class Cell {
         animals.add(animal);
     }
 
-    public Animal getAnimals(Animal animal) {
-        for (Animal finder : animals) {
-            if (animal.equals(finder)) {
-                return animal;
-            }
-        }
-        return null;
-    }
-
-    public void moveAnimals() {
+    public synchronized void moveAnimals() {
         List<Animal> movedAnimals = new ArrayList<>();
         for (Animal animal : animals) {
             if (animal.isAlive()) {
@@ -96,11 +118,17 @@ class Cell {
 
         for (Animal animal : movedAnimals) {
             animals.remove(animal);
-            planet.cells.get(animal.getLocation()).addAnimal(animal);
+            if (animal.getLocation() >= 0 && animal.getLocation() < planet.cells.size()) {
+                planet.cells.get(animal.getLocation()).addAnimal(animal);
+            }
+            else {
+                System.err.println("Ошибка: " + animal.getName() + " выпало за уровень");
+                animal.die();
+            }
         }
     }
 
-    public List<String> multiplyAnimals() {
+    public synchronized List<String> multiplyAnimals() {
         List<Animal> newAnimals = new ArrayList<>();
         List<String> events = new ArrayList<>();
         for (Animal animal : animals) {
@@ -113,12 +141,18 @@ class Cell {
             }
         }
         for (Animal animal : newAnimals) {
-            planet.cells.get(animal.getLocation()).addAnimal(animal);
+            if (animal.getLocation() >= 0 && animal.getLocation() < planet.cells.size()){
+                planet.cells.get(animal.getLocation()).addAnimal(animal);
+            }
+            else {
+                events.add("Ошибка: " + animal.getName() + " появилось за пределами планеты");
+                animal.die();
+            }
         }
         return events;
     }
 
-    public List<String> interact() {
+    public synchronized List<String> interact() {
         List<String> events = new ArrayList<>();
 
         for (Animal animal1 : animals) {

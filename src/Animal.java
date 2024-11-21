@@ -65,12 +65,12 @@ public abstract class Animal {
                 double chance = huntChances.get(hunterName).get(victimName);
                 if (new Random().nextDouble() < chance) {
                     int energyPlus = hunt(other);
-                    events.add(getName() + " съел(-а) " + other.getName() + " (+" + energyPlus + "⚡️)");
+                    events.add(getName() + " съел(-а) " + other.getName() + " в клетке " + getLocation() + " (+" + energyPlus + "⚡️)");
                     energy += energyPlus;
                     other.die();
                 }
                 else {
-                    events.add(getName() + " не смог съесть " + other.getName() + " (-3⚡️)");
+                    events.add(getName() + " не смог съесть " + other.getName() + " в клетке" + getLocation() + " (-3⚡️)");
                     energy -= 3;
                 }
             }
@@ -87,7 +87,7 @@ public abstract class Animal {
         if (isAlive && plant.isAlive()) {
             if (canEat(plant)) {
                 int energyPlus = eat(plant);
-                events.add(getName() + " съел(-а) " + plant.getName() + " (+" + energyPlus + "⚡️)");
+                events.add(getName() + " съел(-а) " + plant.getName() + " в клетке " + getLocation() + " (+" + energyPlus + "⚡️)");
                 energy += energyPlus;
                 plant.die();
             }
