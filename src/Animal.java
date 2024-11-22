@@ -70,7 +70,7 @@ public abstract class Animal {
                     other.die();
                 }
                 else {
-                    events.add(getName() + " не смог съесть " + other.getName() + " в клетке" + getLocation() + " (-3⚡️)");
+                    events.add(getName() + " не смог съесть " + other.getName() + " в клетке " + getLocation() + " (-3⚡️)");
                     energy -= 3;
                 }
             }

@@ -58,7 +58,7 @@ public class Planet {
             List<String> dayEvents = new ArrayList<>();
 
             for (Cell cell : cells) {
-                cell.moveAnimals();
+                dayEvents.addAll(cell.moveAnimals());
             }
 
             for (Cell cell : cells) {
@@ -105,13 +105,20 @@ class Cell {
         animals.add(animal);
     }
 
-    public synchronized void moveAnimals() {
+    public synchronized List<String> moveAnimals() {
+        List<String> events = new ArrayList<>();
+        List<Animal> diedAnimals = new ArrayList<>();
         List<Animal> movedAnimals = new ArrayList<>();
-        for (Animal animal : animals) {
+        List<Animal> animalsCopy = new ArrayList<>(animals);
+
+        for (Animal animal : animalsCopy) {
             if (animal.isAlive()) {
                 int newLocation = animal.move(this);
                 if (newLocation == animal.getLocation()) {
                     movedAnimals.add(animal);
+                }
+                else if (animal.getEnergy() <= 0) {
+                    diedAnimals.add(animal);
                 }
             }
         }
@@ -122,16 +129,25 @@ class Cell {
                 planet.cells.get(animal.getLocation()).addAnimal(animal);
             }
             else {
-                System.err.println("Ошибка: " + animal.getName() + " выпало за уровень");
+                events.add("Ошибка: " + animal.getName() + " выпало за уровень");
                 animal.die();
             }
         }
+
+        for (Animal animal : diedAnimals) {
+            animals.remove(animal);
+            events.add(animal.getName() + " умер(-ла) в клетке " + animal.getLocation() + " от истощения");
+            animal.die();
+        }
+        return events;
     }
 
     public synchronized List<String> multiplyAnimals() {
         List<Animal> newAnimals = new ArrayList<>();
         List<String> events = new ArrayList<>();
-        for (Animal animal : animals) {
+        List<Animal> animalsCopy = new ArrayList<>(animals);
+
+        for (Animal animal : animalsCopy) {
             if (animal.isAlive() && animal.canMultiply()) {
                 Animal newAnimal = animal.multiply();
                 if (newAnimal != null) {
@@ -141,6 +157,8 @@ class Cell {
             }
         }
         for (Animal animal : newAnimals) {
+            animals.add(animal);
+
             if (animal.getLocation() >= 0 && animal.getLocation() < planet.cells.size()){
                 planet.cells.get(animal.getLocation()).addAnimal(animal);
             }
@@ -154,21 +172,17 @@ class Cell {
 
     public synchronized List<String> interact() {
         List<String> events = new ArrayList<>();
+        List<Animal> animalsCopy = new ArrayList<>(animals);
 
-        for (Animal animal1 : animals) {
+        for (Animal animal1 : animalsCopy) {
             if (animal1.isAlive()) {
-                for (Animal animal2 : animals) {
+                for (Animal animal2 : animalsCopy) {
                     if (animal1 != animal2 && animal2.isAlive() && Math.abs(animal1.getLocation() - animal2.getLocation()) <= 1) {
                         events.addAll(animal1.interact(animal2));
                     }
                 }
-            }
-        }
-
-        for (Animal animal : animals) {
-            if (animal.isAlive()) {
                 for (Plant plant : plants) {
-                    events.addAll(animal.interact(plant));
+                    events.addAll(animal1.interact(plant));
                 }
             }
         }
