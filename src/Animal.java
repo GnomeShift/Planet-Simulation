@@ -41,13 +41,18 @@ public abstract class Animal {
     }
 
     public int move(Cell cell) {
-        if (isAlive && energy > 0) {
-            Random random = new Random();
-            int newLocation = location + random.nextInt(3) - 1;
-            newLocation = Math.max(0, Math.min(newLocation, cell.planet.cells.size() - 1));
-            location = newLocation;
-            energy--;
+        if (!isAlive || energy <= 0) {
+            return location;
         }
+
+        Random random = new Random();
+        int newLocation = location + random.nextInt(3) - 1;
+        int maxLocation = cell.planet.cells.size() -1;
+
+        newLocation = Math.max(0, Math.min(newLocation, maxLocation));
+        location = newLocation;
+        energy--;
+
         return location;
     }
 

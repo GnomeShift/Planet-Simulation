@@ -59,13 +59,7 @@ public class Planet {
 
             for (Cell cell : cells) {
                 dayEvents.addAll(cell.moveAnimals());
-            }
-
-            for (Cell cell : cells) {
                 dayEvents.addAll(cell.multiplyAnimals());
-            }
-
-            for (Cell cell : cells) {
                 dayEvents.addAll(cell.interact());
             }
 
@@ -114,7 +108,7 @@ class Cell {
         for (Animal animal : animalsCopy) {
             if (animal.isAlive()) {
                 int newLocation = animal.move(this);
-                if (newLocation == animal.getLocation()) {
+                if (newLocation != animal.getLocation()) {
                     movedAnimals.add(animal);
                 }
                 else if (animal.getEnergy() <= 0) {
@@ -135,7 +129,6 @@ class Cell {
         }
 
         for (Animal animal : diedAnimals) {
-            animals.remove(animal);
             events.add(animal.getName() + " умер(-ла) в клетке " + animal.getLocation() + " от истощения");
             animal.die();
         }
@@ -200,7 +193,14 @@ class Cell {
         }
         if (!animals.isEmpty()) {
             for (Animal animal : animals) {
-                sb.append(animal.getName()).append(animal.getIcon()).append(animal.isAlive() ? "" : "(\uD83D\uDC80)").append(" ");
+                sb.append(animal.getName()).append(animal.getIcon());
+                if (animal.isAlive()) {
+                    sb.append("(").append(animal.getEnergy()).append("⚡️)");
+                }
+                else {
+                    sb.append("(\uD83D\uDC80)");
+                }
+                sb.append(" ");
             }
         }
         return sb.toString();
