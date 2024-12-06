@@ -1,11 +1,10 @@
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.List;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class Tests {
-    private final int size = 2;
+    private final int size = 3;
     private final Planet testPlanet = new Planet(size);
     private Cell cell;
 
@@ -16,7 +15,7 @@ public class Tests {
 
     @Test
     public void testCellCreation() {
-        Assertions.assertTrue(cell.animals.isEmpty(), "Список животных изначально должен быть пустой");
+        assertTrue(cell.animals.isEmpty(), "Список животных изначально должен быть пустой");
     }
 
     @Test
@@ -27,7 +26,7 @@ public class Tests {
         cell.addAnimal(duck);
         cell.addAnimal(caterpillar);
 
-        Assertions.assertTrue(duck.canHunt(caterpillar), "Утка должна охотиться на гусеницу");
+        assertTrue(duck.canHunt(caterpillar), "Утка должна охотиться на гусеницу");
     }
 
     @Test
@@ -37,7 +36,16 @@ public class Tests {
         cell.addAnimal(duck);
         duck.die();
 
-        Assertions.assertFalse(duck.isAlive(), "Утка должна быть мертва");
+        assertFalse(duck.isAlive(), "Утка должна быть мертва");
+    }
+
+    @Test
+    public void testMove() {
+        Animal bear = new Bear(1, 10);
+        cell.addAnimal(bear);
+        bear.move(cell);
+
+        assertTrue(bear.getLocation() != 1, "Медведь хочет стоять на месте");
     }
 
     @Test
@@ -61,7 +69,7 @@ public class Tests {
         cell.addAnimal(snake);
         cell.addAnimal(fox);
 
-        Assertions.assertFalse(snake.canHunt(fox), "Змея не должна охотиться на лису");
+        assertFalse(snake.canHunt(fox), "Змея не должна охотиться на лису");
     }
 
     @Test
@@ -72,6 +80,6 @@ public class Tests {
         cell.addAnimal(snake);
         cell.addPlant(grass);
 
-        Assertions.assertTrue(snake.interact(grass).isEmpty(), "Змея не должна есть растения");
+        assertTrue(snake.interact(grass).isEmpty(), "Змея не должна есть растения");
     }
 }
